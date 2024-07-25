@@ -125,3 +125,4 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - /mongodb/data/db:/data/db
+      - /mongodb/logs:/var/log/mongodb
