@@ -31,23 +31,25 @@ pipeline {
       steps {
         script {
           sshagent (credentials: [SSH_CREDENTIALS_ID]) {
-            // 원격 서버에 해당 디렉토리가 존재하는지 유무 체크
-            def remoteDirExists = sh(script: "ssh ${REMOTE_USER}@${REMOTE_HOST} '[ -d ${REMOTE_PATH} ] && echo true || echo false'", returnStdout: true).trim() == 'true'
+            // 원격 디렉토리 존재 여부 확인
+            def remoteDirExists = sh(script: "ssh ${REMOTE_USER}@${REMOTE_HOST} '[ -d ${REMOTE_PATH} ] && echo true || echo false'", returnStdout: true).trim()
+            echo "Remote directory exists: ${remoteDirExists}"
 
-            if (remoteDirExists) {
-              // .git 파일 존재 유무 체크 함수
-              def gitDirExists = sh(script: "ssh ${REMOTE_USER}@${REMOTE_HOST} '[ -d ${REMOTE_PATH}/.git ] && echo true || echo false'", returnStdout: true).trim() == 'true'
+            if (remoteDirExists == 'true') {
+              // .git 디렉토리 존재 여부 확인
+              def gitDirExists = sh(script: "ssh ${REMOTE_USER}@${REMOTE_HOST} '[ -d ${REMOTE_PATH}/.git ] && echo true || echo false'", returnStdout: true).trim()
+              echo ".git directory exists: ${gitDirExists}"
 
-              if (gitDirExists) {
-                // .git 파일이 존재하는 경우 바로 git pull 적용
-                sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && git reset --hard HEAD && git pull ${GIT_ORIGIN} ${BRANCH}'"
+              if (gitDirExists == 'true') {
+                // .git 파일이 존재하는 경우 git reset 및 git pull 실행
+                sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && git fetch && git reset --hard origin/${BRANCH} && git pull ${GIT_ORIGIN} ${BRANCH}'"
               } else {
-                // .git 파일이 존재하지 않는 경우  git init 후 clone
-                sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && git init && git branch -M main && git remote add ${GIT_ORIGIN} ${GIT_URL} && git fetch && git checkout ${GIT_ORIGIN}/${BRANCH} -f'"
+                // .git 파일이 존재하지 않는 경우 git init 및 clone
+                sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'cd ${REMOTE_PATH} && git init && git remote add ${GIT_ORIGIN} ${GIT_URL} && git fetch && git checkout -b ${BRANCH} ${GIT_ORIGIN}/${BRANCH}'"
               }
             } else {
-              // 디렉토리가 존재하지 않는 경우 디렉토리를 생성하고 git init 후 clone
-              sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'mkdir -p ${REMOTE_PATH} && cd ${REMOTE_PATH} && git init && git branch -M main && git remote add ${GIT_ORIGIN} ${GIT_URL} && git fetch && git checkout ${GIT_ORIGIN}/${BRANCH} -f'"
+              // 디렉토리가 존재하지 않는 경우 디렉토리 생성 및 git init
+              sh "ssh ${REMOTE_USER}@${REMOTE_HOST} 'mkdir -p ${REMOTE_PATH} && cd ${REMOTE_PATH} && git init && git remote add ${GIT_ORIGIN} ${GIT_URL} && git fetch && git checkout -b ${BRANCH} ${GIT_ORIGIN}/${BRANCH}'"
             }
           }
         }
