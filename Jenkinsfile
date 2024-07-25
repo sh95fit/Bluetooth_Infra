@@ -8,7 +8,7 @@ pipeline {
     GIT_ORIGIN = "bluetooth_infra"
 
     REMOTE_PATH = "/home/developer"
-    SSH_CREDENTIALS_ID = "developer"
+    SSH_CREDENTIALS_ID = "bluetooth"
     REMOTE_USER = "developer"
     REMOTE_HOST = "131.186.19.64"
 
