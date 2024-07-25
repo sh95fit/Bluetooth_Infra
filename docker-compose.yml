@@ -72,7 +72,7 @@ services:
 
   frontend:
     build:
-      context: ./Bluetooth_infra/frontend/Bluetooth_infra
+      context: ./Bluetooth_infra/frontend/Bluetooth_Infra
       dockerfile: Dockerfile
     container_name: ble_react_frontend
     tty: true
