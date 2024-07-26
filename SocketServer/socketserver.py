@@ -33,9 +33,8 @@ async def handle_client(reader, writer):
             if not data:
                 break
             message = data.decode()
-            print(f"Received {message} from {addr}")
-
-            print(f"Send: {message}")
+            logger.info(f"{addr} : {message}")
+            logger.info(f"Send: {message}")
             writer.write(data)
             await writer.drain()
 

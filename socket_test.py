@@ -2,7 +2,7 @@ import asyncio
 
 
 async def tcp_client(message):
-    reader, writer = await asyncio.open_connection('127.0.0.1', 83)
+    reader, writer = await asyncio.open_connection('131.186.19.64', 83)
 
     print(f'Send: {message}')
     writer.write(message.encode())
