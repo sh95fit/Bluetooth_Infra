@@ -140,6 +140,8 @@ services:
     tty: true
     ports:
       - "83:83"
+    env_file:
+      - ./.env
     volumes:
       - ./SocketServer/logs:/var/log/socketserver
     networks:

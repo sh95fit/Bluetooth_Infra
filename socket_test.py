@@ -1,8 +1,15 @@
 import asyncio
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+REMOTE_HOST = os.getenv('REMOTE_HOST')
+TCP_PORT = os.getenv('TCP_PORT')
 
 
 async def tcp_client(message):
-    reader, writer = await asyncio.open_connection('131.186.19.64', 83)
+    reader, writer = await asyncio.open_connection(REMOTE_HOST, TCP_PORT)
 
     print(f'Send: {message}')
     writer.write(message.encode())
