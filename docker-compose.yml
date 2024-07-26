@@ -16,7 +16,6 @@ services:
     ports:
       - "81:81" # back_nginx_backend -> FastAPI
       - "82:82" # back_nginx_frontend -> React
-      - "83:83" # TCP/IP Socket Server
     volumes:
       #- ./front/default.conf:/etc/nginx/conf.d/default.conf
       #- ./front/nginx.conf:/etc/nginx/nginx.conf
@@ -139,8 +138,8 @@ services:
     container_name: ble_socketserver
     restart: always
     tty: true
-    expose:
-      - "83"
+    ports:
+      - "83:83"
     volumes:
       - ./SocketServer/logs:/var/log/socketserver
     networks:
