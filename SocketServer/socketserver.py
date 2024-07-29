@@ -4,6 +4,7 @@ import logging
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import json
 
 load_dotenv()
 
@@ -44,17 +45,25 @@ async def handle_client(reader, writer):
 
     try:
         while True:
-            data = await reader.read(100)
+            data = await reader.read(300)
             if not data:
                 break
             message = data.decode()
 
             try:
+                # json 형태의 데이터 불러오기 + 주소값 추가
+                # message_data = json.loads(message)
+                # message_data['address'] = str(addr)
+
+                # collection.insert_one(message_data)
+                # logger.info(f"Inserted document: {message_data}")
+
                 collection.insert_one({
                     'address': str(addr),
                     'message': message
                 })
                 logger.info(f"Inserted document: {message}")
+
             except Exception as e:
                 logger.error(f"Error inserting document into MongoDB: {e}")
 
