@@ -22,6 +22,12 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+
+
+# app = Celery('save_to_mysql', broker=os.getenv('CELERY_BROKER_URL'))
+# app.config_from_object('config.celeryconfig')
+# app.config_from_object(celeryconfig)
+
 logger.info(f"Celery app configured: {app}")
 
 
@@ -38,7 +44,7 @@ def save_data_to_db(data):
 
         cursor = connection.cursor()
 
-        cursor.execute("INSERT INTO bledata (addr, message) VALUES (%s, %s)",
+        cursor.execute("INSERT INTO testdata (addr, message) VALUES (%s, %s)",
                        (data['address'], data['message']))
 
         connection.commit()

@@ -11,7 +11,7 @@ TCP_PORT = os.getenv('TCP_PORT')
 
 
 async def tcp_client(message):
-    reader, writer = await asyncio.open_connection(REMOTE_HOST, TCP_PORT)
+    reader, writer = await asyncio.open_connection('127.0.0.1', TCP_PORT)
 
     send_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 

@@ -73,7 +73,7 @@ async def handle_client(reader, writer):
                 logger.error(f"Error inserting document into MongoDB: {e}")
 
             try:
-                celery_app.send_task('tasks.save_to_mysql.save_data_to_db',
+                celery_app.send_task('tasks.save_to_mysql_test.save_data_to_db',
                                      args=[message_data])
                 logger.info(f"Celery Task Success")
             except Exception as e:
