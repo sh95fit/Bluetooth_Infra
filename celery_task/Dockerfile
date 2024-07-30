@@ -11,4 +11,4 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["celery", "-A", "tasks.save_to_mysql", "worker", "--loglevel=info"]
+CMD ["celery", "-A", "main", "worker", "--loglevel=info"]

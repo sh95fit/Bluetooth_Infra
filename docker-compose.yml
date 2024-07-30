@@ -81,6 +81,7 @@ services:
     networks:
       - bluetooth_net
 
+
   backend:
     build:
       context: ./Bluetooth_infra/backend
@@ -95,6 +96,7 @@ services:
     networks:
       - bluetooth_net
     command: uvicorn main:app --host 0.0.0.0 --reload --port 81
+
 
   redis:
     build:
@@ -115,6 +117,7 @@ services:
       - bluetooth_net
     command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
 
+
   mongodb:
     image: mongo:latest
     container_name: ble_mongodb
@@ -130,6 +133,7 @@ services:
       - ./mongodb/logs:/var/log/mongodb
     networks:
       - bluetooth_net
+
 
   socketserver:
     build:
@@ -151,6 +155,7 @@ services:
     networks:
       - bluetooth_net
 
+
   celery:
     build:
       context: ./celery_task/
@@ -168,6 +173,38 @@ services:
     command: celery -A main worker --loglevel=info
     networks:
       - bluetooth_net
+
+
+  celery_flower:
+    build:
+      context: ./celery_flower/
+      dockerfile: Dockerfile
+    # image: mher/flower:latest
+    container_name: ble_flower
+    restart: always
+    tty: true
+    ports:
+      - '5555:5555'
+    working_dir: /data
+    env_file:
+      - ./.env
+    environment:
+      CELERY_FLOWER_BROKER_URL: ${CELERY_FLOWER_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_BROKER_URL}
+      PYTHONPATH: /app
+    # 명령어 적용 시 에러 발생 (flower 명령어를 인식하지 못하는 에러 발생)
+    # command: flower --broker=${BROKER_URL} --port=5555 --log-file=/var/log/flower/flower.log
+    command: celery -A tasks.module flower --broker=${CELERY_FLOWER_BROKER_URL} --port=5555 --log-file=/var/log/flower/flower.log
+    volumes:
+      - ./celery_flower/logs/:/var/log/flower/
+      - ./celery_task:/app    # 명령어에서 celery_task의 tasks 폴더에 있는 module.py(Celery App 설정 파일)를 읽을 수 있도록 처리하기 위함
+      - ./celery_flower/data/:/data
+    depends_on:
+      - redis
+      - celery
+    networks:
+      - bluetooth_net
+
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
