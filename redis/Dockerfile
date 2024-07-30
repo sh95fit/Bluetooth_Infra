@@ -3,6 +3,10 @@ FROM redis:7.2.4-alpine3.19
 
 COPY ./conf/redis.conf /usr/local/etc/redis/redis.conf
 
+RUN mkdir -p /var/log/redis && \
+  chown -R redis:redis /var/log/redis && \
+  chmod -R 755 /var/log/redis
+
 # Redis 서버를 실행
 # CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]
 
