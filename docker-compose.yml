@@ -140,9 +140,51 @@ services:
     tty: true
     ports:
       - "83:83"
+    depends_on:
+      - redis
+      - mongodb
+      - rabbitmq
     env_file:
       - ./.env
     volumes:
       - ./SocketServer/logs:/var/log/socketserver
     networks:
       - bluetooth_net
+
+  celery:
+    build:
+      context: ./celery_task/
+      dockerfile: Dockerfile
+    container_name: ble_celery
+    restart: always
+    volumes:
+      - ./celery_task/:/src/
+      - ./celery_task/logs/:/var/log/celerytask/
+    env_file:
+      - ./.env
+    depends_on:
+      - rabbitmq
+    command: celery -A tasks.save_to_mysql worker --loglevel=info
+    networks:
+      - bluetooth_net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: ble_rabbitmq
+    volumes:
+      - ./rabbitmq/etc/:/etc/rabbitmq/
+      - ./rabbitmq/data/:/var/lib/rabbitmq/
+      - ./rabbitmq/logs/:/var/log/rabbitmq/
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      - bluetooth_net
+    command: >
+      sh -c "rabbitmq-plugins enable --offline rabbitmq_management &&
+             rabbitmq-server"

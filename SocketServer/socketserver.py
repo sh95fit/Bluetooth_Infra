@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import json
+from celery import Celery
 
 load_dotenv()
 
@@ -38,6 +39,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+celery_app = Celery('socketserver',
+                    broker=os.getenv('CELERY_BROKER_URL'))
+
+
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
     logger.info(f"Connected to {addr}")
@@ -52,8 +57,8 @@ async def handle_client(reader, writer):
 
             try:
                 # json 형태의 데이터 불러오기 + 주소값 추가
-                # message_data = json.loads(message)
-                # message_data['address'] = str(addr)
+                message_data = json.loads(message)
+                message_data['address'] = str(addr)
 
                 # collection.insert_one(message_data)
                 # logger.info(f"Inserted document: {message_data}")
@@ -66,6 +71,13 @@ async def handle_client(reader, writer):
 
             except Exception as e:
                 logger.error(f"Error inserting document into MongoDB: {e}")
+
+            try:
+                celery_app.send_task('tasks.save_to_mysql.save_data_to_db',
+                                     args=[message_data])
+                logger.info(f"Celery Task Success")
+            except Exception as e:
+                logger.error(f"Error sending task to Celery : {e}")
 
             logger.info(f"{addr} : {message}")
             logger.info(f"Send: {message}")
