@@ -191,10 +191,11 @@ services:
     environment:
       CELERY_FLOWER_BROKER_URL: ${CELERY_FLOWER_BROKER_URL}
       CELERY_RESULT_BACKEND: ${CELERY_BROKER_URL}
+      CELERY_FLOWER_BROKER_API: ${CELERY_FLOWER_BROKER_API}
       PYTHONPATH: /app
     # 명령어 적용 시 에러 발생 (flower 명령어를 인식하지 못하는 에러 발생)
     # command: flower --broker=${BROKER_URL} --port=5555 --log-file=/var/log/flower/flower.log
-    command: celery -A tasks.module flower --broker=${CELERY_FLOWER_BROKER_URL} --port=5555 --log-file=/var/log/flower/flower.log
+    command: celery -A tasks.module flower --broker=${CELERY_FLOWER_BROKER_URL} --port=5555 --log-file=/var/log/flower/flower.log --broker_api=${CELERY_FLOWER_BROKER_API}
     volumes:
       - ./celery_flower/logs/:/var/log/flower/
       - ./celery_task:/app    # 명령어에서 celery_task의 tasks 폴더에 있는 module.py(Celery App 설정 파일)를 읽을 수 있도록 처리하기 위함
