@@ -15,17 +15,17 @@ load_dotenv()
 HOST = os.getenv('TCP_HOST')
 PORT = os.getenv('TCP_PORT')
 
-MONGO_URI = os.getenv('MONGO_URI')
-MONGO_DB = os.getenv('MONGO_DB')
-MONGO_COLLECTION_NAME = os.getenv('MONGO_COLLECTION_NAME')
+# MONGO_URI = os.getenv('MONGO_URI')
+# MONGO_DB = os.getenv('MONGO_DB')
+# MONGO_COLLECTION_NAME = os.getenv('MONGO_COLLECTION_NAME')
 
 VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
 RSA_KEY_PASSWORD = os.getenv('RSA_KEY_PASSWORD')
 
 # MongoDB 클라이언트 설정
-client = MongoClient(MONGO_URI)
-db = client[MONGO_DB]
-collection = db[MONGO_COLLECTION_NAME]
+# client = MongoClient(MONGO_URI)
+# db = client[MONGO_DB]
+# collection = db[MONGO_COLLECTION_NAME]
 
 
 # 로그 디렉토리 생성 (디렉토리가 없으면 생성)
@@ -98,23 +98,24 @@ async def handle_client(reader, writer):
             message = data
 
             try:
-                # json 형태의 데이터 불러오기 + 주소값 추가
-                message_data = json.loads(message)
-                message_data['address'] = str(addr)
-
                 # collection.insert_one(message_data)
                 # logger.info(f"Inserted document: {message_data}")
 
-                collection.insert_one({
-                    'address': str(addr),
-                    'message': message
-                })
+                # collection.insert_one({
+                #     'address': str(addr),
+                #     'message': message
+                # })
+                celery_app.send_task(
+                    'tasks.save_to_mongodb.save_data_to_mongo', args=[addr, message])
                 logger.info(f"Inserted document: {message}")
-
             except Exception as e:
                 logger.error(f"Error inserting document into MongoDB: {e}")
 
             try:
+                # json 형태의 데이터 불러오기 + 주소값 추가
+                message_data = json.loads(message)
+                message_data['address'] = str(addr)
+
                 celery_app.send_task('tasks.save_to_mysql_test.save_data_to_db',
                                      args=[message_data])
                 logger.info(f"Celery Task Success")
