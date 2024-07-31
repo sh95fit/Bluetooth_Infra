@@ -2,15 +2,19 @@ amqp==5.2.0
 asyncio==3.4.3
 billiard==4.2.0
 celery==5.4.0
+cffi==1.16.0
 click==8.1.7
 click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.3.0
 colorama==0.4.6
 dnspython==2.6.1
+gevent==24.2.1
+greenlet==3.0.3
 kombu==5.3.7
 mysql-connector-python==9.0.0
 prompt_toolkit==3.0.47
+pycparser==2.22
 pymongo==4.8.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
@@ -18,3 +22,7 @@ six==1.16.0
 tzdata==2024.1
 vine==5.1.0
 wcwidth==0.2.13
+websocket==0.2.1
+websockets==12.0
+zope.event==5.0
+zope.interface==6.4.post2

@@ -16,6 +16,8 @@ MONGO_URI = os.getenv('MONGO_URI')
 MONGO_DB = os.getenv('MONGO_DB')
 MONGO_COLLECTION_NAME = os.getenv('MONGO_COLLECTION_NAME')
 
+VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
+
 
 # MongoDB 클라이언트 설정
 client = MongoClient(MONGO_URI)
@@ -43,10 +45,33 @@ celery_app = Celery('socketserver',
                     broker=os.getenv('CELERY_BROKER_URL'))
 
 
+# TCP 연결 전 인증 절차 추가
+# KEY 인증에 성공한 장비만 연결 허용
+async def authenticate(reader, writer):
+    # 클라이언트가 인증키를 전송할 때까지 기다림
+    data = await reader.read(100)
+    auth_key = data.decode().strip()
+
+    if auth_key == VALID_KEY:
+        writer.write(b"Authentication successful\n")
+        await writer.drain()
+        return True
+    else:
+        writer.write(b"Authentication failed\n")
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+        return False
+
+
 async def handle_client(reader, writer):
     addr = writer.get_extra_info('peername')
     logger.info(f"Connected to {addr}")
     print(f"Connected to {addr}")
+
+    if not await authenticate(reader, writer):
+        logger.info(f"Authentication failed for {addr}")
+        return
 
     try:
         while True:
