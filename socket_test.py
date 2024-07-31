@@ -17,7 +17,7 @@ VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
 
 
 async def tcp_client(message):
-    reader, writer = await asyncio.open_connection('127.0.0.1', TCP_PORT)
+    reader, writer = await asyncio.open_connection(REMOTE_HOST, TCP_PORT)
     logger.info(f"Connected to server at {REMOTE_HOST}:{TCP_PORT}")
 
     auth_key = "test"
