@@ -170,7 +170,7 @@ services:
     depends_on:
       - rabbitmq
     # command: celery -A tasks.save_to_mysql worker --loglevel=info
-    command: celery -A main worker --loglevel=info
+    command: celery -A main worker --loglevel=info --concurrency=4
     networks:
       - bluetooth_net
 
@@ -201,11 +201,31 @@ services:
       - ./celery_task:/app    # 명령어에서 celery_task의 tasks 폴더에 있는 module.py(Celery App 설정 파일)를 읽을 수 있도록 처리하기 위함
       - ./celery_flower/data/:/data
     depends_on:
-      - redis
+      - rabbitmq
       - celery
     networks:
       - bluetooth_net
 
+  celery_beat:
+    build:
+      context: ./celery_beat/
+      dockerfile: Dockerfile
+    container_name: ble_celery_beat
+    restart: always
+    tty: true
+    env_file:
+      - ./.env
+    environment:
+      PYTHONPATH: /app
+    command: celery -A schedule.celery_beat beat --loglevel=info
+    volumes:
+      - ./celery_task:/app
+      - ./celery_beat/logs/:/var/log/celerybeat/
+    depends_on:
+      - rabbitmq
+      - celery
+    networks:
+      - bluetooth_net
 
   rabbitmq:
     image: rabbitmq:3-management-alpine

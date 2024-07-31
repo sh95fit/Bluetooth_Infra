@@ -31,7 +31,7 @@ async def tcp_client(message):
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
 
-    reader, writer = await asyncio.open_connection('127.0.0.1', TCP_PORT, ssl=ssl_context)
+    reader, writer = await asyncio.open_connection(REMOTE_HOST, TCP_PORT, ssl=ssl_context)
     logger.info(f"Connected to server at {REMOTE_HOST}:{TCP_PORT}")
 
     auth_key = VALID_KEY
