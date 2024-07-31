@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 import logging
 import ssl
+from SocketServer.Data_Encryption import RSA_Utils
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,6 +16,10 @@ REMOTE_HOST = os.getenv('REMOTE_HOST')
 TCP_PORT = os.getenv('TCP_PORT')
 
 VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
+
+
+public_key = RSA_Utils.load_public_key(
+    './SocketServer/Data_Encryption/public_test_key.pem')
 
 
 async def tcp_client(message):
@@ -28,9 +33,13 @@ async def tcp_client(message):
     logger.info(f"Connected to server at {REMOTE_HOST}:{TCP_PORT}")
 
     auth_key = VALID_KEY
+    encrypted_auth_key = RSA_Utils.encrypt_with_public_key(
+        public_key, auth_key)
 
     # 인증키 전송
-    writer.write(auth_key.encode() + b'\n')
+    writer.write(encrypted_auth_key)
+    # logger.info(
+    #     f"Encrypted auth key: {encrypted_auth_key} / {len(encrypted_auth_key)}")
     await writer.drain()
 
     # 인증 결과 수신
@@ -54,11 +63,15 @@ async def tcp_client(message):
     }
 
     json_data = json.dumps(data)
+    encrypted_json_data = RSA_Utils.encrypt_with_public_key(
+        public_key, json_data)
 
     print(f'Send >> {send_time} : {message}')
-    writer.write(json_data.encode())
+    writer.write(encrypted_json_data)
+    # logger.info(
+    #     f"Encrypted json_data: {encrypted_json_data} / {len(encrypted_json_data)}")
 
-    response = await reader.read(300)
+    response = await reader.read(256)
     print(f'Received: {response.decode()}')
 
     print('Close the connection')

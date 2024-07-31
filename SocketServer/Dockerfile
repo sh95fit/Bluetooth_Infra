@@ -11,7 +11,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # SSL 인증서 복사
-COPY server.crt server.key ./
+# COPY server.crt server.key ./
 
 # logging Directory 추가
 RUN mkdir -p /var/log/socketserver
