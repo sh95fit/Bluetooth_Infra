@@ -1,5 +1,5 @@
 import asyncio
-# import ssl
+import ssl
 import logging
 import os
 from dotenv import load_dotenv
@@ -122,11 +122,11 @@ async def handle_client(reader, writer):
 
 
 async def main():
-    # ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    # ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(certfile='server.crt', keyfile='server.key')
 
-    # server = await asyncio.start_server(handle_client, HOST, PORT, ssl=ssl_context)
-    server = await asyncio.start_server(handle_client, HOST, PORT)
+    server = await asyncio.start_server(handle_client, HOST, PORT, ssl=ssl_context)
+    # server = await asyncio.start_server(handle_client, HOST, PORT)
 
     addr = server.sockets[0].getsockname()
     print(f"Serving on {addr}")
