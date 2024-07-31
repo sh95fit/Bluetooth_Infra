@@ -85,6 +85,12 @@ async def handle_client(reader, writer):
     try:
         while True:
             encrypted_data = await reader.read(256)
+
+            if len(encrypted_data) == 0:
+                logger.info(
+                    f"Empty data received from {addr}. Closing connection.")
+                break
+
             data = RSA_Utils.decrypt_with_private_key(
                 private_key, encrypted_data)
             if not data:
@@ -116,7 +122,7 @@ async def handle_client(reader, writer):
                 logger.error(f"Error sending task to Celery : {e}")
 
             logger.info(f"{addr} : {message}")
-            logger.info(f"Send: {message}")
+            # logger.info(f"Send: {message}")
             writer.write(b"Success All Process")
             await writer.drain()
 

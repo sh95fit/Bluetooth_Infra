@@ -21,6 +21,8 @@ VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
 public_key = RSA_Utils.load_public_key(
     './SocketServer/Data_Encryption/public_test_key.pem')
 
+TIMEOUT = 10
+
 
 async def tcp_client(message):
 
@@ -71,7 +73,8 @@ async def tcp_client(message):
     # logger.info(
     #     f"Encrypted json_data: {encrypted_json_data} / {len(encrypted_json_data)}")
 
-    response = await reader.read(256)
+    # response = await reader.read(256)
+    response = await asyncio.wait_for(reader.read(256), timeout=TIMEOUT)
     print(f'Received: {response.decode()}')
 
     print('Close the connection')
