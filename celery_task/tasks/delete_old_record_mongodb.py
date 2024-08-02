@@ -33,10 +33,13 @@ def delete_7days_ago_mongodb():
         db = client[MONGO_DB]
         collection = db[MONGO_COLLECTION_NAME]
 
-        seven_days_ago = datetime.now() - timedelta(days=7)
+        # seven_days_ago = datetime.now() - timedelta(days=7)
+        test_days_ago = datetime.now() - timedelta(days=1)
 
+        # result = collection.delete_many(
+        # {"message.send_time": {"$lt": seven_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
         result = collection.delete_many(
-            {"send_time": {"$lt": seven_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
+            {"message.send_time": {"$lt": test_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
 
         client.close()
         logger.info(
