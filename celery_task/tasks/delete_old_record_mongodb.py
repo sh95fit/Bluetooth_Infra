@@ -41,11 +41,17 @@ def delete_7days_ago_mongodb():
                 if isinstance(document['message'], str):
                     try:
                         message_dict = json.loads(document['message'])
+                        if 'send_time' in message_dict:
+                            message_dict['send_time'] = datetime.strptime(
+                                message_dict['send_time'], '%Y-%m-%d %H:%M:%S'
+                            )
                         collection.update_one(
                             {'_id': document['_id']},
                             {'$set': {'message': message_dict}}
                         )
-                    except json.JSONDecodeError:
+                    except (json.JSONDecodeError, ValueError) as e:
+                        logger.error(
+                            f"Error decoding JSON or parsing date: {e}")
                         continue
 
         convert_message_field()
