@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from tasks.module import app
+import json
 
 load_dotenv()
 
@@ -33,6 +34,22 @@ def delete_7days_ago_mongodb():
         db = client[MONGO_DB]
         collection = db[MONGO_COLLECTION_NAME]
 
+        # Mongodb에 message가 JSON 문자열로 저장되어 날짜로 인식 못하는 부분을 조치하기 위한 변환 단계 추가
+        # 추후 데이터를 받을 때 애초에 변환을 거치도록 수정 필요
+        def convert_message_field():
+            for document in collection.find():
+                if isinstance(document['message'], str):
+                    try:
+                        message_dict = json.loads(document['message'])
+                        collection.update_one(
+                            {'_id': document['_id']},
+                            {'$set': {'message': message_dict}}
+                        )
+                    except json.JSONDecodeError:
+                        continue
+
+        convert_message_field()
+
         # seven_days_ago = datetime.now() - timedelta(days=7)
         test_days_ago = datetime.now() - timedelta(days=1)
 
@@ -42,6 +59,7 @@ def delete_7days_ago_mongodb():
             {"message.send_time": {"$lt": test_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
 
         client.close()
+
         logger.info(
             f"Deleted {result.deleted_count} records older than 7 days")
 
