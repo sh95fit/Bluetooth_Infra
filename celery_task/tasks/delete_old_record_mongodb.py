@@ -56,13 +56,13 @@ def delete_7days_ago_mongodb():
 
         convert_message_field()
 
-        # seven_days_ago = datetime.now() - timedelta(days=7)
-        test_days_ago = datetime.now() - timedelta(days=1)
+        seven_days_ago = datetime.now() - timedelta(days=7)
+        # test_days_ago = datetime.now() - timedelta(days=1)
 
-        # result = collection.delete_many(
-        # {"message.send_time": {"$lt": seven_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
         result = collection.delete_many(
-            {"message.send_time": {"$lt": test_days_ago.strftime('%Y-%m-%d %H:%M:%S')}})
+            {"message.send_time": {"$lt": seven_days_ago}})
+        # result = collection.delete_many(
+        #     {"message.send_time": {"$lt": test_days_ago}})
 
         client.close()
 
