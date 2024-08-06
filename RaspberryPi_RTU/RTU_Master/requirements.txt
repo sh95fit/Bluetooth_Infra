@@ -1,0 +1,10 @@
+cffi==1.16.0
+cryptography==43.0.0
+future==1.0.0
+iso8601==2.1.0
+pycparser==2.22
+pyserial==3.5
+python-dotenv==1.0.1
+pyusb==1.2.1
+PyYAML==6.0.1
+serial==0.0.97
