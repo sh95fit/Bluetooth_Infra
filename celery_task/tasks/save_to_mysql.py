@@ -47,8 +47,8 @@ def save_data_to_db(data):
 
         if data['length'] == 120:
             DATA_UNIT = 1000
-            cursor.execute("INSERT INTO bledata (UNTID, IVTID, SERIALNO, EVTDATME, PHASE, STATIONNO, ERRCD, INV1, INV2, INV3, INV4, INV5, INV6, INA1, INA2, INA3, INA4, INA5, INA6, OUTVR, OUTVS, OUTVT, OUTAR, OUTAS, OUTAT, TEMP, TPG, RUNTYPE, CPG, INVERRCD, TOTAL_CO2) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                           (UNTID, IVTID, SERIALNO, data['savetime'], PHASE, data['device_id'], data['message'], data['inv1'], data['inv2'], data['inv3'], data['inv4'], data['inv5'], data['inv6'], data['ina1'], data['ina2'], data['ina3'], data['ina4'], data['ina5'], data['ina6'], data['outvrs'], data['outvst'], data['outvtr'], data['outar'], data['outas'], data['outat'], data['temp'], data['tpg'], data['operation'], data['cpg'], data['message'], data['cpg']*CO2_PARAM/DATA_UNIT))
+            cursor.execute("INSERT INTO bledata (UNTID, IVTID, SERIALNO, EVTDATME, PHASE, STATIONNO, ERRCD, INV1, INV2, INV3, INV4, INV5, INV6, INA1, INA2, INA3, INA4, INA5, INA6, OUTVR, OUTVS, OUTVT, OUTAR, OUTAS, OUTAT, FRQ, TEMP, TPG, RUNTYPE, CPG, INVERRCD, TOTAL_CO2, TODAY_CO2) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                           (UNTID, IVTID, SERIALNO, data['savetime'], PHASE, data['device_id'], data['message'], data['inv1'], data['inv2'], data['inv3'], data['inv4'], data['inv5'], data['inv6'], data['ina1'], data['ina2'], data['ina3'], data['ina4'], data['ina5'], data['ina6'], data['outvrs'], data['outvst'], data['outvtr'], data['outar'], data['outas'], data['outat'], data['fr'], data['temp'], data['tpg'], data['operation'], data['cpg'], data['message'], data['cpg']*CO2_PARAM/DATA_UNIT, data['tpg']*CO2_PARAM/DATA_UNIT))
         else:
             logger.error(f"Incorrect Data Length ...")
 

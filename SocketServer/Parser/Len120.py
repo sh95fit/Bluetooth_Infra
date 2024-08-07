@@ -26,8 +26,8 @@ def data_parser(message):
         "inv5": int(message[96:100], 16),
         "ina6": int(message[100:104], 16)/10,
         "inv6": int(message[104:108], 16),
-        "temp": int(message[108:112], 16),
-        "fr": int(message[112:116], 16),
+        "temp": int(message[108:112], 16)/10,
+        "fr": int(message[112:116], 16)/10,
         "savetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     # print(data)
