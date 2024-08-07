@@ -52,3 +52,11 @@ class Inverter:
                 res_list.append(res)
 
         return res_list
+
+    def dataParser(self, dip, data):
+        self.dip = dip
+        self.ivt = self.inverter[self.dip]()
+
+        res = self.ivt.dataParser(data)
+
+        return res

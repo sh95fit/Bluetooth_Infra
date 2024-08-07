@@ -27,8 +27,12 @@ def TCP_Manager(logger, message):
 
     from Utils import RSA_Utils
 
+    # vs 코드에서 실행 시
     public_key = RSA_Utils.load_public_key(
         './RaspberryPi_RTU/RTU_Master/Utils/Keys/public_test_key.pem')
+    # 명령 프롬프트에서 실행 시
+    # public_key = RSA_Utils.load_public_key(
+    #     './Utils/Keys/public_test_key.pem')
 
     # SSL/TLS 설정
     ssl_context = ssl.create_default_context()

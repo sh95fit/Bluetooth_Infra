@@ -12,7 +12,11 @@ from Inverter.Inverter import Inverter
 from SerialManager import SerialManager
 
 
+# VS 코드 실행 시 경로
 logDirectory = './RaspberryPi_RTU/RTU_Master/logs'
+# 명령 프롬프트 실행 시 경로
+# logDirectory = './logs'
+
 logger = Logger(logDirectory, 'a')
 
 conf = Conf()
@@ -52,7 +56,12 @@ def fetch_and_send_data():
     # 인버터 데이터 보내기
     for r in res:
         print(r)
+
         TCP_Manager(logger, r.hex())
+
+        # 데이터 파서 적용 테스트
+        # res = inverter.dataParser(inverter_type, r)
+        # TCP_Manager(logger, res)
 
 
 def schedule_task():
