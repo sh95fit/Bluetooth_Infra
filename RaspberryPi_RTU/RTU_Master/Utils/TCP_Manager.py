@@ -46,7 +46,8 @@ def TCP_Manager(logger, message):
         ssl_client_socket = ssl_context.wrap_socket(
             client_socket, server_hostname=REMOTE_HOST)
 
-        ssl_client_socket.connect((REMOTE_HOST, TCP_PORT))
+        # ssl_client_socket.connect((REMOTE_HOST, TCP_PORT))
+        ssl_client_socket.connect(('127.0.0.1', TCP_PORT))
         print("서버와 연결되었습니다.")
 
         auth_key = VALID_KEY

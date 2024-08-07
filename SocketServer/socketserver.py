@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import json
 from celery import Celery
 from Data_Encryption import RSA_Utils
+from Parser import Len120
 
 print(os.getcwd())
 
@@ -112,12 +113,29 @@ async def handle_client(reader, writer):
                 logger.error(f"Error inserting document into MongoDB: {e}")
 
             try:
-                # json 형태의 데이터 불러오기 + 주소값 추가
-                message_data = json.loads(message)
-                message_data['address'] = str(addr)
+                # 테스트용 데이터 (json 형태의 데이터 불러오기 + 주소값 추가)
+                # message_data = json.loads(message)
+                # message_data['address'] = str(addr)
 
-                celery_app.send_task('tasks.save_to_mysql_test.save_data_to_db',
-                                     args=[message_data])
+                # 실 데이터
+                real_data = json.loads(data)
+                if len(real_data['message']) == 120:
+                    real_data['length'] = 120
+                    real_data['address'] = str(addr)
+                    parser_message = Len120.data_parser(real_data['message'])
+                    real_data.update(parser_message)
+                    logger.info(f"Real data : {real_data}")
+                else:
+                    logger.info(f"Data length mismatch, exception handled")
+
+                # 테스트용 데이터 수집 Task
+                # celery_app.send_task('tasks.save_to_mysql_test.save_data_to_db',
+                #                      args=[message_data])
+
+                # 실 데이터 수집 Task
+                celery_app.send_task('tasks.save_to_mysql.save_data_to_db',
+                                     args=[real_data])
+
                 logger.info(f"Celery Task Success")
             except Exception as e:
                 logger.error(f"Error sending task to Celery : {e}")
