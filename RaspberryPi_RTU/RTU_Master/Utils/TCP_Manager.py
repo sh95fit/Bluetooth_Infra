@@ -12,6 +12,8 @@ import ssl
 load_dotenv()
 
 REMOTE_HOST = os.getenv('REMOTE_HOST')
+TEST_HOST = "127.0.0.1"
+
 TCP_PORT = int(os.getenv('TCP_PORT'))
 
 VALID_KEY = os.getenv('TCP_VALID_MASTER_KEY')
@@ -47,7 +49,7 @@ def TCP_Manager(logger, message):
             client_socket, server_hostname=REMOTE_HOST)
 
         # ssl_client_socket.connect((REMOTE_HOST, TCP_PORT))
-        ssl_client_socket.connect(('127.0.0.1', TCP_PORT))
+        ssl_client_socket.connect((REMOTE_HOST, TCP_PORT))
         print("서버와 연결되었습니다.")
 
         auth_key = VALID_KEY
